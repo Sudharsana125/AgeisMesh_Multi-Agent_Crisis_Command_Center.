@@ -1,0 +1,30 @@
+[project]
+name = "aegismesh_crisis_command_center"
+version = "0.1.0"
+description = "aegismesh_crisis_command_center using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[file-processing,google-genai,litellm,tools]>=1.15.11,<2.0.0",
+    "exa-py",
+    "fastapi>=0.141.1",
+]
+
+[project.scripts]
+aegismesh_crisis_command_center = "aegismesh_crisis_command_center.main:run"
+run_crew = "aegismesh_crisis_command_center.main:run"
+train = "aegismesh_crisis_command_center.main:train"
+replay = "aegismesh_crisis_command_center.main:replay"
+test = "aegismesh_crisis_command_center.main:test"
+run_with_trigger = "aegismesh_crisis_command_center.main:run_with_trigger"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
+project_id = "6a5ae11e-08bd-456a-bca9-15881fb4af8b"
+
+[tool.uv]
+override-dependencies = ["litellm<=1.82.6", "onnxruntime<=1.23.2"]

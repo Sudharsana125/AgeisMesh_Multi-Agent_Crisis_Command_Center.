@@ -1,0 +1,185 @@
+---
+incident_detection_and_triage:
+  description: Analyze the raw signals provided in {raw_signals} for incident {incident_id}
+    occurring within {environment_context} at {organization_name}. Correlate all incoming
+    signals, detect confirmed and suspected anomalies, assign initial P1–P4 severity,
+    classify the incident domain(s) (infrastructure, network, security, multi-domain),
+    and produce a structured triage brief. The brief must specify which specialist
+    agents require immediate activation and what preliminary hypotheses warrant investigation.
+  expected_output: 'A structured triage brief containing: incident_id, detected_signals,
+    confirmed_anomalies, suspected_anomalies, initial_severity (P1–P4), incident_classification,
+    activated_specialist_domains, preliminary_hypotheses, triage_timestamp, recommended_next_action.'
+  agent: crisis_detection_triage_commander
+telemetry_analysis:
+  description: Using the triage brief for {incident_id}, perform deep analysis of
+    all available sensor and time-series data within {environment_context}. Identify
+    statistical anomalies, correlated metric spikes, deviations from historical baselines,
+    and leading/lagging indicator relationships between metrics. Document all findings
+    as structured evidence.
+  expected_output: 'Structured telemetry evidence report containing: incident_id,
+    observations, evidence (metric name, value, baseline, deviation, timestamp), identified_patterns,
+    correlated_anomalies, hypothesis, confidence (0.0–1.0), severity, contradictions,
+    data_gaps, recommended_next_action.'
+  agent: sensor_data_time_series_pattern_specialist
+  context:
+  - incident_detection_and_triage
+infrastructure_investigation:
+  description: Using the triage brief for {incident_id}, investigate all physical
+    infrastructure systems within {environment_context}. Assess HVAC, cooling, electrical,
+    UPS, generator, and environmental control systems. Identify failures, degradation,
+    capacity overload, or maintenance deficiencies that could explain or contribute
+    to the incident.
+  expected_output: 'Structured infrastructure evidence report containing: incident_id,
+    observations, evidence, system_status_map, failure_points, hypothesis, confidence
+    (0.0–1.0), severity, contradictions, dependencies, recommended_next_action.'
+  agent: physical_infrastructure_facilities_forensics_specialist
+  context:
+  - incident_detection_and_triage
+network_investigation:
+  description: Using the triage brief for {incident_id}, investigate all network systems
+    within {environment_context}. Analyze latency, packet loss, traffic anomalies,
+    routing changes, switch/firewall health, and connectivity between critical systems.
+    Determine whether network issues are a cause, symptom, or contributor to the incident.
+  expected_output: 'Structured network evidence report containing: incident_id, observations,
+    evidence, affected_network_segments, traffic_anomalies, hypothesis, confidence
+    (0.0–1.0), severity, contradictions, dependencies, recommended_next_action.'
+  agent: network_connectivity_forensics_specialist
+  context:
+  - incident_detection_and_triage
+security_investigation:
+  description: Using the triage brief for {incident_id}, analyze system logs, access
+    records, authentication events, and behavioral indicators within {environment_context}.
+    Determine whether any cybersecurity threat is contributing to or causing the detected
+    anomalies. Apply threat intelligence and behavioral analysis frameworks.
+  expected_output: 'Structured security evidence report containing: incident_id, observations,
+    evidence, threat_indicators, behavioral_anomalies, threat_classification, hypothesis,
+    confidence (0.0–1.0), severity, contradictions, dependencies, recommended_next_action.'
+  agent: cybersecurity_threat_behavioral_analysis_specialist
+  context:
+  - incident_detection_and_triage
+business_impact_assessment:
+  description: Using the triage brief for {incident_id}, estimate the operational
+    and financial impact on {organization_name}. Quantify affected users, services,
+    SLA exposure, revenue at risk, regulatory risk, reputational exposure, and recovery
+    cost. Classify business criticality and identify which stakeholder groups require
+    notification.
+  expected_output: 'Structured business impact brief containing: incident_id, affected_users_estimate,
+    affected_services, sla_exposure, revenue_at_risk, regulatory_risk, reputational_risk,
+    business_criticality (Critical/High/Medium/Low), stakeholder_notification_required,
+    rto_rpo_targets, recommended_next_action.'
+  agent: operational_risk_business_impact_analyst
+  context:
+  - incident_detection_and_triage
+evidence_correlation:
+  description: Synthesize all specialist investigation reports for {incident_id}.
+    Identify cross-domain relationships, causal links between anomalies from different
+    domains, contradictory evidence between agent findings, and evidence gaps. Construct
+    a ranked list of unified causal hypotheses with supporting evidence chains. Explicitly
+    document contradictions — they are as important as confirmations.
+  expected_output: 'Structured correlation report containing: incident_id, cross_domain_relationships,
+    causal_chain_candidates, unified_hypotheses (ranked by explanatory power), contradictory_evidence,
+    evidence_gaps, inter_agent_conflicts, confidence_per_hypothesis, recommended_next_action.'
+  agent: cross_domain_evidence_synthesis_causal_reasoning_specialist
+  context:
+  - telemetry_analysis
+  - infrastructure_investigation
+  - network_investigation
+  - security_investigation
+  - business_impact_assessment
+scenario_simulation:
+  description: 'Using the correlated evidence and ranked hypotheses for {incident_id},
+    generate 3–5 distinct incident scenarios. For each scenario, simulate: short-term
+    consequences (0–4 hours), medium-term impacts (4–72 hours), cascading downstream
+    effects, and worst-case escalation paths. Rank scenarios by probability and potential
+    severity.'
+  expected_output: 'Structured simulation report containing: incident_id, scenarios
+    (each with: scenario_id, description, root_cause_assumed, probability, short_term_consequences,
+    medium_term_impacts, cascading_effects, worst_case_path, severity_if_realized),
+    highest_risk_scenario, recommended_next_action.'
+  agent: incident_scenario_modeling_consequence_simulation_specialist
+  context:
+  - evidence_correlation
+adversarial_critique:
+  description: 'Challenge the leading hypothesis and all supporting evidence for {incident_id}.
+    Systematically identify: weak assumptions, confirmation bias, evidence that contradicts
+    the leading hypothesis, alternative explanations that have not been adequately
+    ruled out, missing evidence that would be expected if the hypothesis were true,
+    and logical gaps in the causal chain. If the conclusion is insufficiently supported,
+    explicitly reject it and specify: which agents must re-investigate, what specific
+    additional evidence is required, and what questions must be answered before a
+    conclusion can be accepted.'
+  expected_output: 'Structured adversarial critique containing: incident_id, leading_hypothesis_evaluated,
+    critique_verdict (Accepted/Conditionally Accepted/Rejected), identified_weaknesses,
+    alternative_hypotheses_not_ruled_out, missing_evidence_required, confirmation_bias_indicators,
+    re_investigation_required (true/false), re_investigation_directives (if applicable
+    — specifying agent, evidence needed, and rationale), conditions_for_acceptance,
+    recommended_next_action.'
+  agent: hypothesis_challenger_investigation_quality_enforcer
+  context:
+  - evidence_correlation
+  - scenario_simulation
+root_cause_analysis:
+  description: Using all available evidence, simulation results, and the adversarial
+    critique for {incident_id}, determine the most probable root cause. Reconstruct
+    the complete causal chain from triggering event to observed symptoms. Provide
+    a confidence score (0.0–1.0). Clearly distinguish confirmed facts from supported
+    hypotheses from speculations. Explicitly document why each alternative hypothesis
+    was rejected.
+  expected_output: 'Structured root cause analysis containing: incident_id, most_probable_root_cause,
+    causal_chain (step-by-step), confidence_score (0.0–1.0), facts_confirmed, hypotheses_supported,
+    speculations, alternative_hypotheses_rejected (each with rejection rationale),
+    unresolved_questions, evidence_quality_assessment, recommended_next_action.'
+  agent: root_cause_analysis_causal_chain_reconstruction_specialist
+  context:
+  - evidence_correlation
+  - scenario_simulation
+  - adversarial_critique
+incident_commander_decision:
+  description: 'Evaluate the complete investigation package for {incident_id}. Review
+    root cause confidence, business impact, adversarial critique outcome, and unresolved
+    uncertainties. Make the authoritative command decision: finalize severity classification,
+    select response strategy, and determine whether autonomous response is appropriate
+    or whether human escalation is required. If confidence score is below {escalation_threshold},
+    the decision MUST mandate human escalation. Do not close an incident with insufficient
+    evidence.'
+  expected_output: 'Structured command decision containing: incident_id, final_severity
+    (P1–P4), command_decision (Autonomous Response / Human Escalation Required / Hybrid),
+    response_strategy_selected, confidence_accepted (true/false), escalation_mandated
+    (true/false), escalation_rationale (if applicable), key_decision_factors, unresolved_risks_acknowledged,
+    authorization_to_proceed, decision_timestamp.'
+  agent: crisis_command_authority_final_decision_maker
+  context:
+  - root_cause_analysis
+  - business_impact_assessment
+  - adversarial_critique
+response_planning_and_final_report:
+  description: Convert the Incident Commander's decision for {incident_id} into a
+    fully actionable response plan and produce the complete final incident report
+    for {organization_name}. The response plan must include immediate containment
+    actions (0–1 hour), short-term mitigation (1–24 hours), long-term corrective and
+    preventive actions (1–30 days), owners by role, dependencies, escalation paths,
+    and communication requirements. The final report must synthesize the entire investigation
+    for executive and technical audiences.
+  expected_output: 'Complete AegisMesh Final Incident Report in structured markdown
+    format containing all of the following sections: **Incident Summary** (ID, timeline,
+    organization, classification), **Detected Anomalies** (all confirmed and suspected
+    signals), **Evidence Collected** (by domain — telemetry, infrastructure, network,
+    security), **Agent Findings** (structured summary per specialist agent), **Conflicting
+    Evidence** (explicitly documented contradictions), **Alternative Hypotheses**
+    (with rejection rationale), **Simulation Results** (scenario summaries and highest-risk
+    path), **Most Probable Root Cause** (with causal chain), **Confidence Score**
+    (0.0–1.0), **Severity Level** (P1–P4), **Business Impact** (users, services, financial,
+    regulatory), **Immediate Response Actions** (0–1 hour, with owners), **Short-Term
+    Mitigation** (1–24 hours, with owners and dependencies), **Long-Term Preventive
+    Actions** (1–30 days), **Recommended Escalation** (human escalation requirements
+    if any), **Unresolved Questions** (explicitly acknowledged), **Agent Decision
+    Trace** (chronological record of agent findings and decisions).'
+  agent: incident_response_planning_recovery_architecture_specialist
+  context:
+  - incident_commander_decision
+  - root_cause_analysis
+  - business_impact_assessment
+  - adversarial_critique
+  - scenario_simulation
+  - evidence_correlation
+  output_file: output/final_crisis_report.md
